@@ -1,114 +1,67 @@
-import time
-import pygame
-import sys
+import tkinter as tk
+# Για εγκατάσταση του PIL τρέχουμε  pip install Pillow στο terminal
+from PIL import Image, ImageTk
 
+# Δημιουργία του αρχικού παραθύρου
+root = tk.Tk()
+root.title("Tic Tac Toe")
 
+# Δημιουργία της επικεφαλίδας
+header_label = tk.Label(root, text="Welcome to Tic Tac Toe\nChoose an option to begin", font=("Helvetica", 16), pady=10)
+header_label.pack()
 
-#hello change here
-# Initialize Pygame
-pygame.init()
+# Create a frame to hold the buttons
+button_frame = tk.Frame(root)
+button_frame.pack()
 
-# Define the window size
-window_size = (500, 500)
+# Φόρτωση όλων των εικονιδίων για τα κουμπιά
+human_vs_human_image = Image.open("human_vs_human.png")
+human_vs_human_photo = ImageTk.PhotoImage(human_vs_human_image)
+human_vs_pc_image = Image.open("human_vs_pc.png")
+human_vs_pc_photo = ImageTk.PhotoImage(human_vs_pc_image)
+pc_vs_pc_image = Image.open("pc_vs_pc.png")
+pc_vs_pc_photo = ImageTk.PhotoImage(pc_vs_pc_image)
+credits_image = Image.open("credits.png")
+credits_photo = ImageTk.PhotoImage(credits_image)
+HallOfFame_image = Image.open("HallOfFame.png")
+HallOfFame_photo = ImageTk.PhotoImage(HallOfFame_image)
+Exit_image = Image.open("Exit.png")
+Exit_photo = ImageTk.PhotoImage(Exit_image)
 
-# Define the colors
-white = (255, 255, 255)
-black = (0, 0, 0)
-red = (255, 0, 0)
-blue = (0, 0, 255)
+# Δημιουργία των 3 διαφορετικών κουμπιών με τύπο αντιπάλων / οριζόντια τοποθέτηση
+human_vs_human_button = tk.Button(button_frame, image=human_vs_human_photo)
+human_vs_human_button.image = human_vs_human_photo
+human_vs_human_button.grid(row=0, column=0, padx=5, pady=5)
 
-# Create the game window
-window = pygame.display.set_mode(window_size)
-pygame.display.set_caption("Tic Tac Toe")
+human_vs_human_label = tk.Label(button_frame, text="Human Vs Human")
+human_vs_human_label.grid(row=1, column=0)
 
-# Define the font
-font = pygame.font.SysFont(None, 50)
+human_vs_pc_button = tk.Button(button_frame, image=human_vs_pc_photo)
+human_vs_pc_button.image = human_vs_pc_photo
+human_vs_pc_button.grid(row=0, column=1, padx=5, pady=5)
 
-# Define the board
-board = [[0, 0, 0],
-         [0, 0, 0],
-         [0, 0, 0]]
+human_vs_pc_label = tk.Label(button_frame, text="Human Vs PC")
+human_vs_pc_label.grid(row=1, column=1)
 
-# Define the player
-player = 1
+pc_vs_pc_button = tk.Button(button_frame, image=pc_vs_pc_photo)
+pc_vs_pc_button.image = pc_vs_pc_photo
+pc_vs_pc_button.grid(row=0, column=2, padx=5, pady=5)
 
-# Define the game loop
-while True:
+pc_vs_pc_label = tk.Label(button_frame, text="PC Vs PC")
+pc_vs_pc_label.grid(row=1, column=2)
 
-    # Handle events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+# Δημιουργία των κουμπιών Credits, Hall of Fame, Exit / οριζόντια τοποθέτηση
+credits_button = tk.Button(button_frame, image=credits_photo)
+credits_button.image = credits_photo
+credits_button.grid(row=2, column=0, padx=5, pady=5)
 
-        # Handle mouse clicks
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            x, y = pygame.mouse.get_pos()
+hall_of_fame_button = tk.Button(button_frame, image=HallOfFame_photo)
+hall_of_fame_button.image = HallOfFame_photo
+hall_of_fame_button.grid(row=2, column=1, padx=5, pady=5)
 
-            # Get the row and column
-            row = int(y // 166.666666667)
-            col = int(x // 166.666666667)
+exit_button = tk.Button(button_frame, image=Exit_photo)
+exit_button.image = Exit_photo
+exit_button.grid(row=2, column=2, padx=5, pady=5)
 
-            # Check if the cell is empty
-            if board[row][col] == 0:
-
-                # Update the board
-                board[row][col] = player
-
-                # Switch the player
-                player = 3 - player
-
-    # Clear the screen
-    window.fill(white)
-
-    # Draw the board
-    pygame.draw.line(window, black, (166.666666667, 0), (166.666666667, 500), 2)
-    pygame.draw.line(window, black, (333.333333333, 0), (333.333333333, 500), 2)
-    pygame.draw.line(window, black, (0, 166.666666667), (500, 166.666666667), 2)
-    pygame.draw.line(window, black, (0, 333.333333333), (500, 333.333333333), 2)
-
-    # Draw the X's and O's
-    for row in range(3):
-        for col in range(3):
-            if board[row][col] == 1:
-                pygame.draw.line(window, red, (col * 166.666666667 + 20, row * 166.666666667 + 20), (col * 166.666666667 + 146, row * 166.666666667 + 146), 5)
-                pygame.draw.line(window, red, (col * 166.666666667 + 146, row * 166.666666667 + 20), (col * 166.666666667 + 20, row * 166.666666667 + 146), 5)
-            elif board[row][col] == 2:
-                pygame.draw.circle(window, blue, (col * 166.666666667 + 83, row * 166.666666667 + 83), 70, 5)
-
-    # Check for a winner
-    winner = 0
-    for i in range(3):
-        if board[i][0] == board[i][1] == board[i][2] != 0:
-            winner = board[i][0]
-        if board[0][i] == board[1][i] == board[2][i] != 0:
-            winner = board[0][i]
-        if board[0][0] == board[1][1] == board[2][2] != 0:
-            winner = board[0][0]
-        if board[0][2] == board[1][1] == board[2][0] != 0:
-            winner = board[0][2]
-
-        # Draw the winner
-        if winner != 0:
-            if winner == 1:
-
-                text = font.render("Player 1 wins!", True, red)
-        elif winner == 2:
-            text = font.render("Player 2 wins!", True, blue)
-        window.blit(text, (50, 225))
-
-        # Check for a tie
-        if winner == 0:
-            tie = True
-        for row in range(3):
-            for col in range(3):
-
-                if board[row][col] == 0:
-                    tie = False
-        if tie:
-            text = font.render("Tie game!", True, black)
-        window.blit(text, (150, 225))
-
-        # Update the display
-        pygame.display.update()
-update
+# Τρέχει την κύρια λούπα
+root.mainloop()
