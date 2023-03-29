@@ -161,6 +161,7 @@ def open_registration_window():
 # Δημιουργία του αρχικού παραθύρου
 root = tk.Tk()
 root.title("Tic Tac Toe")
+root.iconbitmap("images/tic tac toe icon.ico")
 
 # Δημιουργία της επικεφαλίδας
 header_label = tk.Label(root, text="Welcome to Tic Tac Toe\nChoose an option to begin", font=("Helvetica", 16), pady=10)
