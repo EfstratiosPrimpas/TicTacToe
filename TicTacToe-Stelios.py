@@ -26,10 +26,6 @@ class TicTacToe(tk.Frame):
                                                          value="Computer vs Computer", command=self.reset_game)
         self.reset_button = tk.Button(self.mode_frame, text="Reset Game", command=self.reset_game)
         self.setup_widgets()
-        # self.top_scores = {"Easy": [], "Medium": [], "Hard": []}
-
-    def create_radio_button(self, text, value):
-        return tk.Radiobutton(self.mode_frame, text=text, variable=self.game_mode, value=value, command=self.reset_game)
 
     def setup_widgets(self):
         self.score_frame = tk.Frame(self.master)
@@ -48,7 +44,7 @@ class TicTacToe(tk.Frame):
             button.grid(row=i // 3, column=i % 3)
             self.buttons.append(button)
 
-        self.current_player_label = tk.Label(self.master, text="Player {} plays".format(self.current_player), bd=3,
+        self.current_player_label = tk.Label(self.master, text="Player {}'s turn".format(self.current_player), bd=3,
                                              relief=tk.FLAT, anchor=tk.E, bg="#bdcdff", padx=20, pady=6,
                                              font=("Consolas", 12, "bold"), highlightthickness=2, highlightbackground="blue")
         self.current_player_label.place(relx=0.97, rely=0.2, anchor=tk.E)
@@ -72,6 +68,7 @@ class TicTacToe(tk.Frame):
         self.difficulty_menu.pack(side=tk.LEFT)
         self.reset_button = tk.Button(self.mode_frame, text="Reset Game", command=self.reset_game)
         self.reset_button.pack(side=tk.RIGHT)
+        self.all_menu = [self.player_vs_player_radio, self.player_vs_computer_radio, self.computer_vs_computer_radio, self.difficulty_menu, self.reset_button]
 
     def reset_game(self):
         # Εναλλαγή των παικτών σε διαδοχικούς γύρους
@@ -79,7 +76,7 @@ class TicTacToe(tk.Frame):
         self.current_player = self.player1
         self.board = [" "]*9
         self.reset_board_colors()
-        self.current_player_label.config(text="Player {} plays".format(self.current_player))
+        self.current_player_label.config(text="Player {}'s turn".format(self.current_player))
         for button in self.buttons:
             button.config(text="", state=tk.NORMAL)
         if self.game_mode.get() == "Computer vs Computer":
@@ -104,23 +101,34 @@ class TicTacToe(tk.Frame):
             # self.buttons[idx].update()
             self.buttons[idx].config(text=self.current_player, state=tk.DISABLED,
                                      disabledforeground=self.buttons[idx].cget('fg'))
-            winner = self.check_win()
-            if winner:
-                self.end_game(winner)
-                self.update_scores(winner)
+            # Απενεργοποίηση του ταμπλό μέχρι να κάνει κίνηση ο άλλος παίκτης
+            for button in self.buttons + self.all_menu:
+                button.config(state=tk.DISABLED)
+            # Έλεγχος αν το παιχνίδι έχει τελειώσει
+            if self.check_win():
+                self.end_game(winner=self.current_player)
+                self.update_scores(self.current_player)
                 self.game_number += 1
-            elif " " not in self.board:
-                self.end_game()
-                self.update_scores(None)
-                self.game_number += 1
+            elif not any(c == " " for c in self.board):
+                self.end_game(winner=None)
             else:
-                self.current_player = self.player2 if self.current_player == self.player1 else self.player1
-                self.current_player_label.config(text="Player {} plays".format(self.current_player))
+                # Εναλλαγή παίκτη και ενεργοποίηση του ταμπλό για να κάνει την κίνηση του
+                self.current_player = self.player1 if self.current_player == self.player2 else self.player2
+                self.master.after(500, lambda: self.current_player_label.config(
+                    text="Player {}'s turn".format(self.current_player)))
                 if self.game_mode.get() == "Player vs Computer" and self.current_player == self.player2:
+                    # Όταν παίζει ο υπολογιστής, εισάγεται μια καθυστέρηση 1 δευτερολέπτου για την προσομοίωση
+                    # ενός πιο φυσικού παιχνιδιού
                     self.master.after(1000, self.play_computer)
+                else:
+                    for button in self.buttons:
+                        button.config(state=tk.NORMAL)
 
     def play_computer(self):
         if self.game_mode.get() == "Player vs Computer":
+            # Απενεργοποίηση του ταμπλό και του μενού στο player vs computer και computer vs computer mode
+            for button in self.all_menu:
+                button.config(state=tk.DISABLED)
             player = self.player2
             print("Επίπεδο δυσκολίας: ", self.difficulty_var.get())
             empty_cells = [i for i in range(9) if self.board[i] == " "]
@@ -132,7 +140,7 @@ class TicTacToe(tk.Frame):
                 strategy = difficulty_strategies.get(self.difficulty_var.get(), lambda: None)
                 idx = strategy() or self.get_best_move(self.board, player)
                 self.play(idx)
-                # Check if game is over
+                # Έλεγχος αν το παιχνίδι έχει τελειώσει
                 if self.check_win():
                     self.end_game(winner=player, automatic=True)
                     self.update_scores(player)
@@ -140,9 +148,7 @@ class TicTacToe(tk.Frame):
                 elif not empty_cells:
                     self.end_game(winner=None, automatic=True)
                 else:
-                    # Wait for player's turn
                     self.current_player = self.player1
-
         else:
             player = self.current_player
             empty_cells = [i for i in range(9) if self.board[i] == " "]
@@ -152,11 +158,14 @@ class TicTacToe(tk.Frame):
                 else:
                     idx = self.get_best_move(self.board, player)
                 self.play(idx)
-                # Check if game is over
+                # Έλεγχος αν το παιχνίδι έχει τελειώσει
                 if self.check_win():
                     self.end_game(winner=player, automatic=True)
                 elif not empty_cells:
                     self.end_game(winner=None, automatic=True)
+                    # Ενεργοποίηση του ταμπλό και του μενού εφόσον το παιχνίδι έχει τελειώσει σε ισοπαλία
+                    for button in self.buttons + self.all_menu:
+                        button.config(state=tk.NORMAL)
                 else:
                     # Εναλλαγή μεταξύ του παίκτη Χ και του παίκτη Ο στο computer vs computer mode
                     self.current_player = self.player1 if player == self.player2 else self.player2
@@ -253,8 +262,11 @@ class TicTacToe(tk.Frame):
         return None
 
     def end_game(self, winner=None, automatic=False):
-        for button in self.buttons:
+        for button in self.buttons + self.all_menu:
             button.config(state=tk.DISABLED)
+        #self.reset_button.config(state=tk.NORMAL)
+        for menu in self.buttons + self.all_menu:
+            menu.config(state=tk.NORMAL)  # Ενεργοποίηση του μενού μετά το τέλος του γύρου
         if winner:
             for combination in self.winning_combinations:
                 if self.board[combination[0]] == self.board[combination[1]] == self.board[combination[2]] != " ":
@@ -271,10 +283,11 @@ class TicTacToe(tk.Frame):
                 messagebox.showinfo("Game Over", "It's a tie!")
 
 
+
 if __name__ == "__main__":
     root = tk.Tk()
     root.configure(background='#D9D9D9')
-    # root.option_add("*Font", "Consolas 12")
+    root.option_add("*Font", "Consolas 12")
     root.title('Tic-Tac-Toe Game')
     game = TicTacToe(root)
     root.mainloop()
