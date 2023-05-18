@@ -8,7 +8,7 @@ from warnings import showwarning
 
 nameX = 'X'
 nameO = 'O'
-
+game_round = 0
 
 class TicTacToe(tk.Frame):
     def __init__(self, master):
@@ -25,8 +25,10 @@ class TicTacToe(tk.Frame):
         self.board = [" "]*9
         self.winning_combinations = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
         self.board_frame = tk.Frame(self.master)
-        self.game_number = 1
+        self.game_number = game_round
         self.buttons = []
+        self.o_wins = 0
+        self.x_wins = 0
         self.mode_frame = tk.Frame(self.master)
         self.setup_widgets()
 
@@ -56,6 +58,13 @@ class TicTacToe(tk.Frame):
         self.mode_frame.pack(padx=200, pady=5)
         self.reset_button = tk.Button(self.mode_frame, text="Reset Game", command=self.reset_game)
         self.reset_button.pack(side=tk.RIGHT)
+        self.round_label = tk.Label(self.master, text=f'Round: {game_round+1}', bd=3,
+                                    relief=tk.FLAT, anchor=tk.E, bg="#bdcdff", padx=20, pady=6,
+                                    font=("Consolas", 12, "bold"), highlightthickness=2,
+                                    highlightbackground="blue")
+        self.round_label.place(relx = 0.94, rely = 0.1, anchor ='ne')
+        self.back_button = tk.Button(self.master, text='Back', command=player_vs_player.destroy)
+        self.back_button.pack()
 
     def reset_game(self):
         # Εναλλαγή των παικτών σε διαδοχικούς γύρους
@@ -80,6 +89,9 @@ class TicTacToe(tk.Frame):
             self.scores[winner] += 1
         self.score_label.config(text=(f"(X) {nameX}   {self.scores['X']}  :  {self.scores['O']}   {nameO} (O)"))
     def play(self, idx):
+
+        global game_round
+
         if self.board[idx] == " ":
             self.board[idx] = self.current_player
             if self.current_player == self.player1:
@@ -94,13 +106,65 @@ class TicTacToe(tk.Frame):
                 self.end_game(winner)
                 self.update_scores(winner)
                 self.game_number += 1
+                game_round += 1
+                self.reset_game()
+                if self.game_number == 3:
+                    if self.x_wins > self.o_wins:
+                        messagebox.showinfo("Congrats", message=f"Player {nameX} wins!", parent=self.master)
+                        add_winner(nameX)
+                        game_round = 0
+                        player_vs_player.destroy()
+
+                    elif self.o_wins > self.x_wins:
+                        messagebox.showinfo("Congrats", message=f"Player {nameO} wins!", parent=self.master)
+                        add_winner(nameO)
+                        game_round = 0
+                        player_vs_player.destroy()
             elif " " not in self.board:
                 self.end_game()
                 self.update_scores(None)
                 self.game_number += 1
+                game_round += 1
+                self.reset_game()
+                if self.game_number == 3:
+                    if self.x_wins > self.o_wins:
+                        messagebox.showinfo("Congrats", message=f"Player {nameX} wins!", parent=self.master)
+                        add_winner(nameX)
+                        game_round = 0
+                        player_vs_player.destroy()
+                    elif self.o_wins > self.x_wins:
+                        messagebox.showinfo("Congrats", message=f"Player {nameO} wins!", parent=self.master)
+                        add_winner(nameO)
+                        game_round = 0
+                        player_vs_player.destroy()
+                    elif self.x_wins == self.o_wins:
+                        messagebox.showinfo("TIE!!!", message=f"None wins! It's a tie!", parent=self.master)
+                        game_round = 0
+                        player_vs_player.destroy()
             else:
-                self.current_player = self.player2 if self.current_player == self.player1 else self.player1
+                self.round_label.config(text="Round: {}".format(self.game_number + 1))
+                if self.current_player == self.player2:
+                    self.current_player = self.player1
+                    self.current_name = self.name1
+                elif self.current_player == self.player1:
+                    self.current_player = self.player2
+                    self.current_name = self.name2
                 self.current_player_label.config(text="Player {} plays".format(self.current_player))
+
+                if self.game_number == 3:
+                    if self.x_wins > self.o_wins:
+                        messagebox.showinfo("Congrats", message=f"Player {nameX} wins!", parent=self.master)
+                        add_winner(nameX)
+                        player_vs_player.destroy()
+                    elif self.o_wins > self.x_wins:
+                        messagebox.showinfo("Congrats", message=f"Player {nameO} wins!", parent=self.master)
+                        add_winner(nameO)
+                        player_vs_player.destroy()
+                    elif self.x_wins == self.o_wins:
+                        messagebox.showinfo("TIE!!!", message=f"None wins! It's a tie!", parent=self.master)
+                        player_vs_player.destroy()
+
+
 
     def check_win(self, board=None):
         if not board:
@@ -114,22 +178,24 @@ class TicTacToe(tk.Frame):
         for button in self.buttons:
             button.config(state=tk.DISABLED)
         if winner:
-            add_winner(self.current_name)
+            #add_winner(self.current_name)
             for combination in self.winning_combinations:
                 if self.board[combination[0]] == self.board[combination[1]] == self.board[combination[2]] != " ":
                     for idx in combination:
                         if self.board[idx] == self.player1:
                             self.buttons[idx].config(bg="#FF4D4D")
+                            self.x_wins += 1
                         elif self.board[idx] == self.player2:
                             self.buttons[idx].config(bg="#008ECC")
+                            self.o_wins += 1
                     break
             if not automatic:
-                messagebox.showinfo("Game Over", message=f"Player {self.current_name} wins!", parent=self.master)
-
+                messagebox.showinfo(f"End of round {game_round+1}", message=f"Player {self.current_name} wins!", parent=self.master)
         else:
             if not automatic:
-                messagebox.showinfo("Game Over", "It's a tie!", parent=self.master)
-
+                messagebox.showinfo(f"End of round {game_round+1}", message=f"None wins! It's a tie!", parent=self.master)
+                self.x_wins += 0
+                self.o_wins += 0
 
 
 def open_credits_window():
@@ -167,6 +233,7 @@ def open_credits_window():
 def open_registration_window():
 
     def start_pvp():
+        global player_vs_player
         global nameX
         global nameO
         nameX = entry_x.get().strip()
@@ -176,6 +243,9 @@ def open_registration_window():
 
         elif nameO == "":
             messagebox.showwarning("Warning", "Player O has no name!", parent=registration_window)
+
+        elif nameO == nameX:
+            messagebox.showerror("Ident names!", "Players must have different names!", parent=registration_window)
 
         else:
             registration_window.destroy()
@@ -188,7 +258,7 @@ def open_registration_window():
             # root.option_add("*Font", "Consolas 12")
             player_vs_player.title('Player Vs Player')
             pvp = TicTacToe(player_vs_player)
-            # player_vs_player.mainloop()
+            player_vs_player.mainloop()
 
     registration_window = Toplevel()
     registration_window.title("Registration Window")
