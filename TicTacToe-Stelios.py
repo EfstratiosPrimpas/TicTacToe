@@ -124,7 +124,7 @@ class TicTacToe(tk.Frame):
                     for button in self.buttons:
                         button.config(state=tk.NORMAL)
 
-       def play_computer(self):
+      def play_computer(self):
         if self.game_mode.get() == "Player vs Computer":
             # Απενεργοποίηση του μενού στο player vs computer και computer vs computer mode
             for button in self.all_menu:
