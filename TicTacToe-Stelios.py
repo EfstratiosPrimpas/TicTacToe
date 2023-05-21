@@ -263,12 +263,14 @@ class TicTacToe(tk.Frame):
                 return board[combination[0]]
         return None
 
-    def end_game(self, winner=None, automatic=False):
+        def end_game(self, winner=None, automatic=False):
         for button in self.buttons + self.all_menu:
             button.config(state=tk.DISABLED)
+        for button in self.all_menu:
+            button.config(state=tk.NORMAL)
         #self.reset_button.config(state=tk.NORMAL)
-        for menu in self.buttons + self.all_menu:
-            menu.config(state=tk.NORMAL)  # Ενεργοποίηση του μενού μετά το τέλος του γύρου
+        #for menu in self.buttons + self.all_menu:
+            #menu.config(state=tk.NORMAL)  # Ενεργοποίηση του μενού μετά το τέλος του γύρου
         if winner:
             for combination in self.winning_combinations:
                 if self.board[combination[0]] == self.board[combination[1]] == self.board[combination[2]] != " ":
@@ -276,7 +278,8 @@ class TicTacToe(tk.Frame):
                         if self.board[idx] == self.player1:
                             self.buttons[idx].config(bg="#FF4D4D")
                         elif self.board[idx] == self.player2:
-                            self.buttons[idx].config(bg="#008ECC")
+                            self.buttons[idx].config(bg="#3e9bed")
+                    break
                     break
             if not automatic:
                 messagebox.showinfo("Game Over", "Player {} wins!".format(winner))
