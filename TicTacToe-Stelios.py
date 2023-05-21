@@ -124,9 +124,9 @@ class TicTacToe(tk.Frame):
                     for button in self.buttons:
                         button.config(state=tk.NORMAL)
 
-    def play_computer(self):
+       def play_computer(self):
         if self.game_mode.get() == "Player vs Computer":
-            # Απενεργοποίηση του ταμπλό και του μενού στο player vs computer και computer vs computer mode
+            # Απενεργοποίηση του μενού στο player vs computer και computer vs computer mode
             for button in self.all_menu:
                 button.config(state=tk.DISABLED)
             player = self.player2
@@ -164,12 +164,14 @@ class TicTacToe(tk.Frame):
                 elif not empty_cells:
                     self.end_game(winner=None, automatic=True)
                     # Ενεργοποίηση του ταμπλό και του μενού εφόσον το παιχνίδι έχει τελειώσει σε ισοπαλία
-                    for button in self.buttons + self.all_menu:
-                        button.config(state=tk.NORMAL)
+                    # for button in self.buttons + self.all_menu:
+                        # button.config(state=tk.NORMAL)
                 else:
                     # Εναλλαγή μεταξύ του παίκτη Χ και του παίκτη Ο στο computer vs computer mode
                     self.current_player = self.player1 if player == self.player2 else self.player2
                     self.master.after(1000, self.play_computer)
+                    for button in self.buttons:
+                        button.config(state=tk.DISABLED)
 
     def computer_medium_strategy(self):
         # 1. Συμπληρώνει τρίλιζα (εφόσον έχει αυτή τη δυνατότητα), ώστε να κερδίσει
