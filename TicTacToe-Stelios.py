@@ -124,7 +124,7 @@ class TicTacToe(tk.Frame):
                     for button in self.buttons:
                         button.config(state=tk.NORMAL)
 
-      def play_computer(self):
+    def play_computer(self):
         if self.game_mode.get() == "Player vs Computer":
             # Απενεργοποίηση του μενού στο player vs computer και computer vs computer mode
             for button in self.all_menu:
@@ -263,7 +263,7 @@ class TicTacToe(tk.Frame):
                 return board[combination[0]]
         return None
 
-     def end_game(self, winner=None, automatic=False):
+    def end_game(self, winner=None, automatic=False):
         for button in self.buttons + self.all_menu:
             button.config(state=tk.DISABLED)
         for button in self.all_menu:
@@ -296,4 +296,3 @@ if __name__ == "__main__":
     root.title('Tic-Tac-Toe Game')
     game = TicTacToe(root)
     root.mainloop()
-
