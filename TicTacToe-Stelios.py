@@ -263,7 +263,7 @@ class TicTacToe(tk.Frame):
                 return board[combination[0]]
         return None
 
-        def end_game(self, winner=None, automatic=False):
+     def end_game(self, winner=None, automatic=False):
         for button in self.buttons + self.all_menu:
             button.config(state=tk.DISABLED)
         for button in self.all_menu:
