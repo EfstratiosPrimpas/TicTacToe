@@ -19,5 +19,5 @@
 
 Οδηγίες χρήσης (μέσω .exe αρχείου):
 
-Εκτελέστε το αρχείο 'main.exe'. Μετά την ανάδειξη του πρώτου νικητή (μετά τους τρεις γύρους), θα δημιουργηθεί το αρχείο 'hall_of_fame.json', 
-όπου τηρείται η βαθμολογία των παικτών. Path: https://drive.google.com/drive/folders/1c1u7DF8F7d2ssk3rwoHDXlcfM2weUkbl?usp=sharing  
+Κατεβάστε και εκτελέστε το αρχείο 'main.exe'όπως και τον φάκελο 'images'(φροντίστε να τα βάλετε στον ίδιο φάκελο). Μετά την ανάδειξη του πρώτου νικητή (μετά τους τρεις γύρους), θα δημιουργηθεί το αρχείο 'hall_of_fame.json', όπου τηρείται η βαθμολογία των παικτών. 
+Path: https://drive.google.com/drive/folders/1c1u7DF8F7d2ssk3rwoHDXlcfM2weUkbl?usp=sharing  
